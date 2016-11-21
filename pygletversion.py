@@ -52,6 +52,7 @@ def update(dt):
         y = radius
         vy = - vy
 
+
 pyglet.clock.schedule_interval(update, 1 / 60.0)
 
 pyglet.app.run()
