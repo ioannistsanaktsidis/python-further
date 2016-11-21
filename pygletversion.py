@@ -9,6 +9,8 @@ fps_display = pyglet.clock.ClockDisplay()
 x, y = window.width / 2, window.height / 2
 vx, vy = 80.0, 150.0
 
+radius = 30
+
 
 @window.event
 def on_draw():
@@ -18,8 +20,8 @@ def on_draw():
         delta_angle = twopi / 20
         angle = 0
         while angle < twopi:
-            yield x + 30 * cos(angle)
-            yield y + 30 * sin(angle)
+            yield x + radius * cos(angle)
+            yield y + radius * sin(angle)
             angle += delta_angle
 
     pyglet.gl.glColor3f(1.0, 1.0, 0)
@@ -34,20 +36,20 @@ def update(dt):
     x += vx * dt
     y += vy * dt
 
-    if x + 30 > window.width:
-        x = window.width - 30
+    if x + radius > window.width:
+        x = window.width - radius
         vx = - vx
 
-    if x - 30 < 0:
-        x = 30
+    if x - radius < 0:
+        x = radius
         vx = - vx
 
-    if y + 30 > window.height:
-        y = window.height - 30
+    if y + radius > window.height:
+        y = window.height - radius
         vy = - vy
 
-    if y - 30 < 0:
-        y = 30
+    if y - radius < 0:
+        y = radius
         vy = - vy
 
 pyglet.clock.schedule_interval(update, 1 / 60.0)
