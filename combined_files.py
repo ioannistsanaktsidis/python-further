@@ -1,10 +1,7 @@
-import sys
-
 import Tkinter as tk
 import pyglet
 
-
-from math import cos, pi, sin, sqrt
+from math import cos, pi, sin
 
 
 class Display(object):
@@ -119,37 +116,22 @@ class TkinterDisplay(Display):
         self.window.update()
         self.window.after(17, self.update, 1 / 60.0)
 
-    # def update(dt):
-    #     global x, y, vx, vy
-    #     oldx, oldy = x, y
-    #     x += vx * dt
-    #     y += vy * dt
 
-    #     if x + 60 > w.winfo_width():
-    #         x = w.winfo_width() - 60
-    #         vx = - vx
+function_choice = raw_input(
+    "Please choose function: 1 -> PyGlet or 2 -> Tkinter. Input: ")
 
-    #     if x < 0:
-    #         x = 0
-    #         vx = - vx
+while (not function_choice.isdigit() or int(function_choice) not in (1, 2)):
+    print("Illegal character - Please choose between 1 and 2")
+    function_choice = raw_input(
+        "Please choose function: 1 -> PyGlet | 2 -> Tkinter. Input: ")
 
-    #     if y + 60 > w.winfo_height():
-    #         y = w.winfo_height() - 60
-    #         vy = - vy
+result = int(function_choice)
 
-    #     if y < 0:
-    #         y = 0
-    #         vy = - vy
-
-    #     w.move(particle, x - oldx, y - oldy)
-    #     w.update()
-    #     w.after(17, update, 1 / 60.0)
-
-
-# t = TkinterDisplay(60, 300, 200, 80.0, 150.0)
-# t.update(0)
-# tk.mainloop()
-
-p = PygletDisplay(30, 300, 200, 80.0, 150.0)
-pyglet.clock.schedule_interval(p.update, 1 / 60.0)
-pyglet.app.run()
+if result == 1:
+    p = PygletDisplay(30, 300, 200, 80.0, 150.0)
+    pyglet.clock.schedule_interval(p.update, 1 / 60.0)
+    pyglet.app.run()
+elif result == 2:
+    t = TkinterDisplay(60, 300, 200, 80.0, 150.0)
+    t.update(0)
+    tk.mainloop()
