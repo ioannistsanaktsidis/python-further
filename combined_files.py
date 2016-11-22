@@ -39,21 +39,27 @@ class Particle(object):
         self.x += self.vx * dt
         self.y += self.vy * dt
 
-    def bounce(self, (xmin, xmax, ymin, ymax)):
-        if self.x + self.r > self.window.width:
-            self.x = self.window.width - self.r
+    def bounce(self, bounding_box):
+        xmin, xmax, ymin, ymax = bounding_box
+
+        excess = self.x + self.r - xmax
+        if excess > 0:
+            self.x -= excess * 2
             self.vx = - self.vx
 
-        if self.x - self.r < 0:
-            self.x = self.r
+        excess = self.x - self.r - xmin
+        if excess < 0:
+            self.x -= excess * 2
             self.vx = - self.vx
 
-        if self.y + self.r > self.window.height:
-            self.y = self.window.height - self.r
+        excess = self.y + self.r - ymax
+        if excess > 0:
+            self.y -= excess * 2
             self.vy = - self.vy
 
-        if self.y - self.r < 0:
-            self.y = self.r
+        excess = self.y - self.r - ymin
+        if excess < 0:
+            self.y -= excess * 2
             self.vy = - self.vy
 
     # pyglet.clock.schedule_interval(update, 1 / 60.0)
