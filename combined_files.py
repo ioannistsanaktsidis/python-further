@@ -1,22 +1,51 @@
 import sys
 
+import Tkinter as tk
 import pyglet
+
 
 from math import cos, pi, sin, sqrt
 
 
-class Particle(object):
-    """docstring for ClassName"""
-    window = pyglet.window.Window(600, 400)
-    fps_display = pyglet.clock.ClockDisplay()
-    twopi = 2 * pi
+class Display(object):
+    """docstring for Display"""
 
-    def __init__(self, r, (x, y), (vx, vy)):
+    def __init__(self, r, x, y, vx, vy):
         self.r = r
         self.x, self.y = (x, y)
         self.vx, self.vy = (vx, vy)
 
-    @window.event
+    def update(self, dt, window_width, window_height):
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+
+        if self.x + self.r > window_width:
+            self.x = window_width - self.r
+            self.vx = - self.vx
+
+        if self.x - self.r < 0:
+            self.x = self.r
+            self.vx = - self.vx
+
+        if self.y + self.r > window_height:
+            self.y = window_height - self.r
+            self.vy = - self.vy
+
+        if self.y - self.r < 0:
+            self.y = self.r
+            self.vy = - self.vy
+
+
+class PygletDisplay(Display):
+    """docstring for ClassName"""
+
+    def __init__(self, r, x, y, vx, vy):
+        super(PygletDisplay, self).__init__(r, x, y, vx, vy)
+        self.window = pyglet.window.Window(600, 400)
+        self.fps_display = pyglet.clock.ClockDisplay()
+        self.twopi = 2 * pi
+        self.window.event(self.on_draw)
+
     def on_draw(self):
         self.window.clear()
 
@@ -34,79 +63,93 @@ class Particle(object):
 
         self.fps_display.draw()
 
-    def move(self, dt):
-        # global x, y, vx, vy
-        self.x += self.vx * dt
-        self.y += self.vy * dt
+    def update(self, dt):
+        super(PygletDisplay, self).update(
+            dt, self.window.width, self.window.height)
 
-    def bounce(self, bounding_box):
-        xmin, xmax, ymin, ymax = bounding_box
+    # def move(self, dt):
+    #     # global x, y, vx, vy
+    #     self.x += self.vx * dt
+    #     self.y += self.vy * dt
 
-        excess = self.x + self.r - xmax
-        if excess > 0:
-            self.x -= excess * 2
-            self.vx = - self.vx
+    # def bounce(self, bounding_box):
+    #     xmin, xmax, ymin, ymax = bounding_box
 
-        excess = self.x - self.r - xmin
-        if excess < 0:
-            self.x -= excess * 2
-            self.vx = - self.vx
+    #     excess = self.x + self.r - xmax
+    #     if excess > 0:
+    #         self.x -= excess * 2
+    #         self.vx = - self.vx
 
-        excess = self.y + self.r - ymax
-        if excess > 0:
-            self.y -= excess * 2
-            self.vy = - self.vy
+    #     excess = self.x - self.r - xmin
+    #     if excess < 0:
+    #         self.x -= excess * 2
+    #         self.vx = - self.vx
 
-        excess = self.y - self.r - ymin
-        if excess < 0:
-            self.y -= excess * 2
-            self.vy = - self.vy
+    #     excess = self.y + self.r - ymax
+    #     if excess > 0:
+    #         self.y -= excess * 2
+    #         self.vy = - self.vy
 
-    # pyglet.clock.schedule_interval(update, 1 / 60.0)
+    #     excess = self.y - self.r - ymin
+    #     if excess < 0:
+    #         self.y -= excess * 2
+    #         self.vy = - self.vy
 
-    # pyglet.app.run()
 
-# elif sys.argv[1] == 'tk':
-#     import Tkinter as tk
+class TkinterDisplay(Display):
+    """docstring for TkinterDisplay"""
 
-#     master = tk.Tk()
+    def __init__(self, r, x, y, vx, vy):
+        super(TkinterDisplay, self).__init__(r, x, y, vx, vy)
+        self.master = tk.Tk()
+        self.window = tk.Canvas(self.master, width=600, height=400, bg='black')
+        self.window.pack()
 
-#     w = tk.Canvas(master, width=600, height=400, bg='black')
-#     w.pack()
+    def particle(self):
+        return self.window.create_oval(
+            self.x, self.y, self.x + self.r, self.y + self.r, outline='yellow')
 
-#     x, y = w.winfo_height() / 2, w.winfo_width() / 2
-#     vx, vy = 80.0, 150.0
+    def update(self, dt):
+        oldx, oldy = self.x, self.y
+        super(TkinterDisplay, self).update(
+            dt, self.window.winfo_width(), self.window.winfo_height())
 
-#     diameter = 60
+        self.window.delete(tk.ALL)
+        self.window.move(self.particle(), self.x - oldx, self.y - oldy)
+        self.window.update()
+        self.window.after(17, self.update, 1 / 60.0)
 
-#     particle = w.create_oval(x, y, diameter, diameter, outline='yellow')
+    # def update(dt):
+    #     global x, y, vx, vy
+    #     oldx, oldy = x, y
+    #     x += vx * dt
+    #     y += vy * dt
 
-#     def update(dt):
-#         global x, y, vx, vy
-#         oldx, oldy = x, y
-#         x += vx * dt
-#         y += vy * dt
+    #     if x + 60 > w.winfo_width():
+    #         x = w.winfo_width() - 60
+    #         vx = - vx
 
-#         if x + 60 > w.winfo_width():
-#             x = w.winfo_width() - 60
-#             vx = - vx
+    #     if x < 0:
+    #         x = 0
+    #         vx = - vx
 
-#         if x < 0:
-#             x = 0
-#             vx = - vx
+    #     if y + 60 > w.winfo_height():
+    #         y = w.winfo_height() - 60
+    #         vy = - vy
 
-#         if y + 60 > w.winfo_height():
-#             y = w.winfo_height() - 60
-#             vy = - vy
+    #     if y < 0:
+    #         y = 0
+    #         vy = - vy
 
-#         if y < 0:
-#             y = 0
-#             vy = - vy
+    #     w.move(particle, x - oldx, y - oldy)
+    #     w.update()
+    #     w.after(17, update, 1 / 60.0)
 
-#         w.move(particle, x - oldx, y - oldy)
-#         w.update()
-#         w.after(17, update, 1 / 60.0)
 
-#     update(0)
+# t = TkinterDisplay(60, 300, 200, 80.0, 150.0)
+# t.update(0)
+# tk.mainloop()
 
-#     tk.mainloop()
+p = PygletDisplay(30, 300, 200, 80.0, 150.0)
+pyglet.clock.schedule_interval(p.update, 1 / 60.0)
+pyglet.app.run()
