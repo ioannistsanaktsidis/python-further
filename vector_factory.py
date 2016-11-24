@@ -39,7 +39,7 @@ def Vector(dimensions):
             rep = ""
             if len(self.values) in [2, 3]:
                 rep = "Vector{}D".format(
-                    len(self.values)) + "{}".format(tuple(self.values))
+                    len(dimensions)) + "{}".format(tuple(self.values))
             else:
                 rep = "Vector('{}')".format(
                     dimensions) + "{}".format(tuple(self.values))
@@ -47,15 +47,15 @@ def Vector(dimensions):
             return rep.replace(' ', '')
 
     for index, name in enumerate(dimensions):
-        setattr(Vector, name,  property(
-            *make_closure_with_separate_binding_of_i(index, name)))
+        setattr(Vector, name, property(
+            *make_closure_with_separate_binding_of_i(index)))
 
     Vector.__name__ = "Vector('{}')".format(dimensions)
 
     return Vector
 
 
-def make_closure_with_separate_binding_of_i(index, name):
+def make_closure_with_separate_binding_of_i(index):
     def get(self):
         return self[index]
 
