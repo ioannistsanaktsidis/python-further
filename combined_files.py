@@ -3,6 +3,8 @@ import pyglet
 
 from math import cos, pi, sin
 
+from Colour import Color, Colour
+
 
 class Display(object):
     """docstring for Display"""
